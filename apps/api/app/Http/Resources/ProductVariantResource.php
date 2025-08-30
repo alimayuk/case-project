@@ -15,6 +15,7 @@ class ProductVariantResource extends JsonResource
             'variant_name' => $this->variant_name,
             'quantity' => $this->quantity,
             'price_override' => $this->price_override,
+            'product' => new ProductResource($this->whenLoaded('product')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
         ];

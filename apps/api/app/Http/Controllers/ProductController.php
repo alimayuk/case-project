@@ -41,18 +41,48 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
+    public function show($id)
+    {
+        $product = Product::with('variants')->find($id);
+
+        if (!$product) {
+            return response()->json([
+                'code' => 'PRODUCT_NOT_FOUND',
+                'message' => 'Ürün bulunamadı'
+            ], 404);
+        }
+
+        return response()->json([
+            'id' => $product->id,
+            'sku' => $product->sku,
+            'name' => $product->name,
+            'price' => $product->price,
+            'vat_rate' => $product->vat_rate,
+            'status' => $product->status,
+            'created_at' => $product->created_at,
+            'variants' => $product->variants->map(fn($v) => [
+                'id' => $v->id,
+                'product_id' => $v->product_id,
+                'variant_name' => $v->variant_name,
+                'quantity' => $v->quantity,
+                'price_override' => $v->price_override,
+                'created_at' => $v->created_at,
+                'updated_at' => $v->updated_at
+            ])
+        ]);
+    }
+
+
     public function otherColors($id)
     {
         $product = Product::findOrFail($id);
 
-        // aynı ürün grubundaki diğer ürünleri bul
         $pos = strrpos($product->sku, '-');
         if ($pos === false) {
             return ProductResource::collection(collect());
         }
         $baseSku = substr($product->sku, 0, $pos);
 
-        // sonrasında diğer ürünleri bul
         $otherProducts = Product::where('id', '!=', $product->id)
             ->where('sku', 'like', $baseSku . '-%')
             ->where('status', 1)

@@ -14,5 +14,6 @@ Route::middleware('cart.rate_limit:5,1')->group(function () {
 });
 
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/products/{id}/other-colors', [ProductController::class, 'otherColors']);
 Route::get('products/{id}/variants', [ProductController::class, 'getVariants']);

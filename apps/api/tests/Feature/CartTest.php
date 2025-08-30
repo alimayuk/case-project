@@ -64,7 +64,11 @@ class CartTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonStructure(['message', 'available_quantity']);
+            ->assertJsonStructure([
+                'code',
+                'message',
+                'fields' => ['qty']
+            ]);
     }
 
     public function test_product_search()
